@@ -202,7 +202,7 @@
         print(step +1, sess.run(cost, feed_dict = {X:x_data, Y:y_data}))
         
     prediction = tf.argmax(model, axis =1)
-    target = tf.argmax(Ym axis =1)
+    target = tf.argmax(Y, axis =1)
     print('예측값: ', sess.run(prediction, feed_dict = {X:x_data}))
     print('실제값: ', sess.run(target, feed_dict = {Y:y_data}))
     
@@ -212,3 +212,88 @@
     
 ## 4.3 심층 신경망 구현하기
 
+이제 신경망의 층을 둘 이상으로 구성한 심층 신경망, 즉 딥러닝을 구현해본다.
+
+1️⃣ 다층 신경망을 만드는 것은 매우 간단하다. 앞서 만든 신경망 모델에 가중치와 편향을 추가하기만 하면 된다.
+
+    W1 = tf.Variable(tf.random_uniform([2,10], -1. , 1.))
+    W2 = tf.Variable(tf.random_uniform([10,3], -1. , 1.))
+    
+    b1 = tf.Variable(tf.zeros([10]))
+    b2 = tf.Variable(tf.zeros([3]))
+    
+  코드를 보면 첫 번째 가중치 형태는 [2,10]으로, 두 번째 가중치는 [10,3]으로 설정했고 편향을 각각 10과 3으로 설정했다. 그 의미는 다음과 같다.
+  
+    # 가중치
+    W1 = [2,10]  -> [특징, 은닉층의 뉴런 수]
+    W2 = [10,3]  -> [은닉 층이 뉴런 수, 분류 수]
+    
+    # 편향
+    b1 = [10]   -> 은닉층의 뉴런 수
+    b2 = [3]   -> 분류 수
+    
+  입력층과 출력층은 각각 특징과 분류 개수로 맞추고 중간의 연결 부부은 맞닿은 층의 뉴런 수와 같도록 맞추면 된다. 중간의 연결 부분을 **은닉층**이라고 하며 은닉층의 뉴런 수는 하이퍼파라미터이니 실험을 통해 가장 적절한 수를 정하면 된다.
+  
+2️⃣ 특징 입력값에 첫 번째 가중치와 편향, 그리고 활성화 함수를 적용한다.
+
+    L1 = tf.add(tf.matmul(X,W1), b1)
+    L1 = tf.nn.relu(L1)
+    
+3️⃣ 출력층을 만들기 위해 두 번째 가중치와 편향을 적용하여 최종 모델을 만든다. 은닉층에 두 번째 가중치 W2와 편향 b2를 적용하면 최종적으로 3개의 출력값을 가지게 된다.
+
+    model = tf.add(tf.matmul(L1,W2), b2)
+    
+4️⃣ 손실 함수를 작성한다. 손실 함수는 교차 엔트로피 함수를 사용한다. 다만 이번에는 텐서플로가 기본 제공하는 교차 엔트로피 함수를 이용한다, 
+
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels = Y, logits = model))
+    
+    optimizer = tf.train.AdamOptimizer(learning_rate = 0.01)   # 경사하강법보다 보편적으로 성능이 좋음
+    train_op = optimizer.minimize(cost)
+  
+5️⃣ 학습 진행, 손실값과 정확도 측정 등 앞절에서 본 나머지 코드를 넣고 실행하면 정확한 예측값을 얻게 될 것이다.
+
+📍 전체 코드 📍
+
+    import tensorflow as tf
+    import numpy as np
+    
+    x_data = np.array([[0,0], [1,0], [1,1], [0,0], [0,0], [0,1]])
+    y_data = np.array([1,0,0], [0,1,0], [0,0,1], [1,0,0], [1,0,0], [0,0,1]])
+  
+    X = tf.placeholder(tf.float32)
+    Y = tf.placeholder(tf.float32)  
+  
+    W1 = tf.Variable(tf.random_uniform([2,10], -1. , 1.))
+    W2 = tf.Variable(tf.random_uniform([10,3], -1. , 1.))
+    
+    b1 = tf.Variable(tf.zeros([10]))
+    b2 = tf.Variable(tf.zeros([3])) 
+  
+    L1 = tf.add(tf.matmul(X,W1), b1)
+    L1 = tf.nn.relu(L1)  
+    
+    model = tf.add(tf.matmul(L1,W2), b2)
+    
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels = Y, logits = model))
+    
+    optimizer = tf.train.AdamOptimizer(learning_rate = 0.01)   # 경사하강법보다 보편적으로 성능이 좋음
+    train_op = optimizer.minimize(cost)   
+    
+    init = tf.global_variables_initializer()
+    sess = tf.Session()
+    sess.run(init)
+    
+    for step in range(100):
+      sess.run(train_op, feed_dict = {X:x_data, Y:y_data})
+      
+      if (step+1) % 10 == 0::
+        print(step +1, sess.run(cost, feed_dict = {X:x_data, Y:y_data}))
+        
+    prediction = tf.argmax(model, axis =1)
+    target = tf.argmax(Y, axis =1)
+    print('예측값: ', sess.run(prediction, feed_dict = {X:x_data}))
+    print('실제값: ', sess.run(target, feed_dict = {Y:y_data}))
+    
+    is_correct = tf.equal(prediction, target)
+    accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+    print('정확도: %.2f' % sess.run(accuracy *100, feed_dict={X:x_data, Y:y_data}))    
