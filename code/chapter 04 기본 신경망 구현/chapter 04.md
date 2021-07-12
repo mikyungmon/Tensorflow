@@ -174,7 +174,7 @@
     import numpy as np
     
     x_data = np.array([[0,0], [1,0], [1,1], [0,0], [0,0], [0,1]])
-    y_data = np.array([1,0,0], [0,1,0], [0,0,1], [1,0,0], [1,0,0], [0,0,1]])
+    y_data = np.array([[1,0,0], [0,1,0], [0,0,1], [1,0,0], [1,0,0], [0,0,1]])
     
     X = tf.placeholder(tf.float32)
     Y = tf.placeholder(tf.float32)
@@ -198,7 +198,7 @@
     for step in range(100):
       sess.run(train_op, feed_dict = {X:x_data, Y:y_data})
       
-      if (step+1) % 10 == 0::
+      if (step+1) % 10 == 0:
         print(step +1, sess.run(cost, feed_dict = {X:x_data, Y:y_data}))
         
     prediction = tf.argmax(model, axis =1)
