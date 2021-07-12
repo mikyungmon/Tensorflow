@@ -286,6 +286,9 @@
     W = tf.Variable(tf.random_uniform([1],-1.0,1.0))
     b = tf.Variable(tf.random_uniform([1],-1.0,1.0))
     
+    X = tf.placeholder(tf.float32, name = "X")
+    Y = tf.placeholder(tf.float32, name = "Y")
+    
     hypothesis = W * X + b
     
     cost = tf.reduce_mean(tf.square(hypothesis - Y))
