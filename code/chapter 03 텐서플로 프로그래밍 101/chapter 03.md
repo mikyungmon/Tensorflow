@@ -303,9 +303,9 @@
             
         print(step, cost_val, sess.run(W), sess.run(b))
         
-     print("\n === Test ===")
-     print("X:5, Y:", sess.run(hypothesis, feed_dict= {X:5}))
-     print("X:2.5, Y:", sess.run(hypothesis, feed_dict= {X:2.5}))
+        print("\n === Test ===")
+        print("X:5, Y:", sess.run(hypothesis, feed_dict= {X:5}))
+        print("X:2.5, Y:", sess.run(hypothesis, feed_dict= {X:2.5}))
     
     
     
