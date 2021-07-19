@@ -75,7 +75,7 @@ MNIST 데이터셋이 매우 잘 정리되어 있지만 사용하려면 데이�
 5️⃣ 학습을 진행한다.
 
     batch_size = 100   # 미니배치 크기를 100으로 설정
-    total_batch = int(mnist.trian.num_examples / batch_size)   # 학습데이터의 총 개수인 mnist.trian.num_examples를 배치크기로 나눠 미니 배치가 총 
+    total_batch = int(mnist.trian.num_examples / batch_size)   # 학습데이터의 총 개수인 mnist.trian.num_examples를 배치크기로 나눠 미니 배치가 총 몇 개인지를 저장해둠
 
 
 
