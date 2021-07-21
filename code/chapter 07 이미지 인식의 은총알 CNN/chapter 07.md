@@ -164,7 +164,7 @@ layers모듈을 이용하여 앞서 만든 CNN모델을 조금 더 간단하게 
 
 이 코드 역시 tf.layers 모듈을 사용하면 다음처럼 간단하게 작성할 수 있다. 직접 생각하고 계산해야 하는 것들을 생략할 수 있어 매우 편하게 코드를 작성할 수 있다.
 
-    L3 = tf.contrib.layers.flatten(2)
+    L3 = tf.contrib.layers.flatten(L2)
     L3 = tf.layers.dense(L3,256,activation=tf.nn.relu)
     
   - tf.layers 등의 고급 API를 사용하면 활성화 함수나 컨볼루션 계층을 만들기 위한 나머지 수치들은 알아서 계산하고 적용해준다.
