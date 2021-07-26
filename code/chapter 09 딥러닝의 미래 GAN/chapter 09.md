@@ -48,7 +48,7 @@ GAN은 오토인코더와 같이 결과물을 생성하는 생성 모델 중 하
        G_W2 = tf.Variable(tf.random_normal([n_hidden, n_input], stddev = 0.01))
        G_b2 = tf.Variable(tf.zeros([n_input])
 
-5. 구분자 생성망에 사용할 변수들을 설정한다. 은닉층은 생성자와 동일하게 구성한다. 
+5. 구분자 신경망에 사용할 변수들을 설정한다. 은닉층은 생성자와 동일하게 구성한다. 
 
        D_W1 = tf.Variable(tf.random_normal([n_input, n_hidden], stddev = 0.01))
        D_b1 = tf.Variable(tf.zeros([n_hidden]))
@@ -121,7 +121,7 @@ GAN은 오토인코더와 같이 결과물을 생성하는 생성 모델 중 하
                 _, loss_val_D = sess.run([train_D, loss_D], feed_dict = {X: batch_xs, Y:noise})
                 _. loss_val_G = sess.run([train_G, loss_G], feed_dict = {Z:noise})
                 
-            print('Epoch:', '%04d' % epoch, 'D loss: {:.4}'.format(loss_val_D), 'G loss: {:.4}'.format(loss_val_G)
+            print('Epoch:', '%04d' % epoch, 'D loss: {:.4}'.format(loss_val_D), 'G loss: {:.4}'.format(loss_val_G))
             
 13. 모델을 완성하였으니 이제 학습 결과를 확인하는 코드를 작성해본다. 학습이 잘 되는지는 0,9,19,29번째,, ~ 마다 생성기로 이미지를 생성하여 눈으로 직접 확인하도록한다. 결과를 확인하는 코드는 학습 루프 안에 작성해야한다.
             
