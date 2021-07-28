@@ -430,7 +430,7 @@ Sequence to Sequence모델은 입력을 위한 신경망인 인코더와 출력�
 
 9️⃣ 그리고 예측 모델을 돌린다. 세 번째 차원을 argmax로 취해 가장 확률이 높은 글자(의 인덱스)를 예측값으로 만든다. 세 번째 차원을 argmax로 취하는 이유는 결과값이 [batch size, time steps, input size]형태로 나오기 때문이다.
 
-참고로 결과값으로 [[[0 0 0.9 0.1 0.2 0.3 0 0 ~] [ 0 0.1 0.3 0.7 0.1 0 0 0 ~] ~]]이 나온다면 최종 예측 결과인 tf.argmax(model,2)의 값은 [[[2],[3],~]]가 된다.
+참고로 결과값으로 [[[0 0 0.9 0.1 0.2 0.3 0 0  ~ ] [ 0 0.1 0.3 0.7 0.1 0 0 0  ~ ]  ~ ]]이 나온다면 최종 예측 결과인 tf.argmax(model,2)의 값은 [[[2],[3],~]]가 된다.
 
     prediction = tf.argmax(model,2)
     result = sess.run(prediction, feed_dict = {enc_input : input_batch, dec_input : output_batch, targets : target_batch})
