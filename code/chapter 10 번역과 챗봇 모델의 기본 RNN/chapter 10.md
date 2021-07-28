@@ -385,7 +385,7 @@ Sequence to Sequence모델은 입력을 위한 신경망인 인코더와 출력�
         enc_cell = tf.nn.rnn_cell.BasicRNNCell(n_hidden)  # 기본 셀 사용
         enc_cell = tf.nn.rnn_cell.DropoutWrapper(enc_cell, output_keep_prob = 0.5)  # 각 셀에 드롭아웃 적용
         
-        outputs, enc_states = tf.nn.dynamic_rnn(enc_cell, enc_input, dype = tf.float32)
+        outputs, enc_states = tf.nn.dynamic_rnn(enc_cell, enc_input, dtype = tf.float32)
         
     with tf.variable_scope('decode'):
         dec_cell = tf.nn.rnn_cell.BasicRNNCell(n_hidden)
