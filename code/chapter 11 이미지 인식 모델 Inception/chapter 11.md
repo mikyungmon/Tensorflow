@@ -77,10 +77,10 @@ retrain.py 스크립트는 디렉터리 이름을 꽃 이름으로 하여 각 �
         sunflowers
         tulips
         
-   - 그리고 예측 후 출력하는 값은 다음과 같이 모든 인덱스에 대해 총합이 1인 확률을 나열한 softmax값이다.
+ - 그리고 예측 후 출력하는 값은 다음과 같이 모든 인덱스에 대해 총합이 1인 확률을 나열한 softmax값이다.
 
-         # daisy  dandelion roses   sunflowers  tulips
-         [0.6509   0.1175   0.0147   0.2099,  0.0067]
+       # daisy  dandelion roses   sunflowers  tulips
+       [0.6509   0.1175   0.0147   0.2099,  0.0067]
 
 3️⃣ 테스트 결과를 확인할 때 사용하기 위해 파일에 담긴 꽃 이름들을 가져와 배열로 저장해둔다. 이름을 출력하는 데 사용할 것이다.
 
