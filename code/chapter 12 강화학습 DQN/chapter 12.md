@@ -84,6 +84,8 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
     OBSERVE = 100   # 일정 수준의 학습 데이터가 쌓이기 전에는 학습하지 않고 지켜보기만 하라는 의미. 100번의 프레임이 지난 뒤부터 학습을 진행
 
    - DQN은 안정된 학습을 위해 학습을 진행하면서 최적의 행동을 얻어내는 기본 신경망과 얻어낸 값이 좋은 선택인지 비교하는 목표 신경망이 분리되어 있다. 가장 최근의 학습 결과나 아주 오래된 학습 결과로 현재의 선택을 비교한다면 적절한 비교가 되지 않을 것이다.
+
+   ➡ 목표 신경망 갱신할 때, 아주 오래된 학습 결과로 비교한다면 차이가 많이 나게되고 최근의 학습 결과로 비교하면 차이가 너무 적게되어서 적절한 비교를 하려면 1000이 적당하다고 설명하는 듯?
    
    - 따라서 적당한 시점에 최신의 학습 결과로 목표 신경망을 갱신해줘야 한다.
 
@@ -136,14 +138,14 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
         state = game.reset()    # 게임의 상태 초기화
         brain.init_state(state)    # 그 상태를 DQN에 초기 상태값으로 넣어줌
         
-  - 상태는 screen_width * screen_height 크기의 화면 구성이다.
+  - 상태는 screen_width * screen_height 크기의 화면 구성이다 -> 게임 화면 자체를 말하는 듯. 캐릭터가 오른쪽으로 움직여서 화면이 바뀌면 다른 상태
 
 ❗ 원래 DQN에서는 픽셀값들을 상태값으로 받지만 여기서 사용하는 Game모듈에서는 학습 속도를 높이고자 해당 위치에 사각형이 있는지 없는지를 1과 0으로 전달한다.
 
 🔟 이제 게임 에피소드 한 번 진행한다. 녹색 사각형이 다른 사각형에 충돌할 때까지이다. 게임에서 처음으로 해야할 일은 다음에 취할 행동을 선택하는 일이다. 학습 초반에는 행동을 무작위로 선택하고 일정 시간(에피소드 100번)이 지난 뒤 epsilon값을 조금씩 줄여간다. 그러면 초반에는 대부분 무작위 값을 사용하다가 무작위 값을 사용하는 비율이 점점 줄어들어 나중에는 거의 사용하지 않게 된다. 이 값들도 하이퍼파라미터이므로 잘 조절해야 한다.
 
     with not terminal:
-        if np.random.rand() < epsilon:
+        if np.random.rand() < epsilon:   # np.random.rand()하면 처음에는 0~1값이 나오니까 무조건 epsilon값인 1보다 작게 되어 무조건 무작위로 뽑게 되는거고 epsilon값이 줄면 무작위로 뽑게 되는 횟수가 줄어드는 것
             action = random.randrange(NUM_ACTION)
         else : 
             action = brain.get_action()
@@ -198,7 +200,7 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
         ckpt = tf.train.get_checkpoint_state('model')
         saver.restore(sess, ckpt.model_checkpoint_path)
         
-1️⃣6️⃣ 다음은 게임을 진행하는 부분이다. 학습 코드가 빠져있어 매우 단순하다. 게임 진행을 인간이 인지할 수 있는 속도로 보여주기 위해 마지막 부분에 time.sleep(0.3)코드를 추가했다는 것만 주의하자
+1️⃣6️⃣ 다음은 게임을 진행하는 부분이다. 학습 코드가 빠져있어 매우 단순하다. 게임 진행을 인간이 인지할 수 있는 속도로 보여주기 위해 마지막 부분에 time.sleep(0.3)코드를 추가했다는 것만 주의하자.
 
     for episode in range(MAX_EPISODE):
         terminal = False
@@ -260,7 +262,7 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
         self.memory = deque()   # 게임 플레이 결과를 저장할 메모리를 만드는 코드
         self.state = None
         
-   - collections모듈의 deque()함수로 만들어진 객체는 배열과 비슷하지만 맨 처음에 들어간 요소를 쉽게 제거해주는 popleft함수를 제공한다, 저장할 기억의 개수를 제한하는 데 사용한다.
+   - collections모듈의 deque()함수로 만들어진 객체는 배열과 비슷하지만 맨 처음에 들어간 요소를 쉽게 제거해주는 popleft함수를 제공한다. 저장할 기억의 개수를 제한하는 데 사용한다.
 
 4️⃣ 그런 다음 DQN에서 사용할 플레이스홀더들을 설정한다.
 
@@ -280,7 +282,7 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
  
 5️⃣ 다음으로 학습을 진행할 신경망과 목표 신경망을 구성한다. 두 신경망을 구성이 같으므로 신경망을 구성하는 함수를 같은 것을 사용하되 이름만 다르게 한다. 목표 신경망은 단순히 Q값을 구하는 데만 사용하므로 손실값과 최적화 함수를 사용하지 않는다.
 
-    self.Q = self._build_network('main')
+    self.Q = self._build_network('main')   # 학습 신경망을 거쳐서 나온 Q-value값
     self.cost, self.train_op = self._build_op()
     
     self.target_Q = self.build_network('target')
@@ -301,9 +303,9 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
 7️⃣ 다음은 DQN의 손실 함수를 구하는 부분이다. 현재 상태를 이용해 학습 신경망으로 구한 Q_value와 다음 상태를 이용해 목표 신경망으로 구현 Q_value(input_Y)를 이용하여 손실값을 구하고 최적화한다.
 
     def _build_op(self):
-        one_hot = tf.one_hot(self.input_A, self.n_action, 1.0, 0.0)
+        one_hot = tf.one_hot(self.input_A, self.n_action, 1.0, 0.0)    # 만약 액션이 3개면 크기가 3이고 input_A에 해당하는 액션만 1이고 나머지는 0이 됨
         Q_value = tf.reduce_sum(tf.multiply(self.Q, one_hot), axis =1)   # tf.multiply(self.Q, one_hot)는 self.Q로 구한 값에서 현재 행동의 인덱스에 해당하는 값만 선택하기 위해 사용
-        cost = tf.reduce_mean(tf.square(self.input_Y - Q_valu))
+        cost = tf.reduce_mean(tf.square(self.input_Y - Q_value))    # 목표 신경망에서 나온 Q value값 - 학습 신경망에서 나온 Q value값 
         train_op = tf.train.AdamOptimizer(1e-6).minimize(cost)
         
         return cost, train_op
@@ -345,7 +347,7 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
         
 그런 다음 가져온 메모리에서 다음 상태를 만들어 목표 신경망에 넣어 target_Q_value를 구한다. 현재 상태가 아닌 다음 상태를 넣는다는 점에 유의한다.
 
-    target_Q_value = self.session.run(self.target_Q, feed_dict = {self.input_X : next_state})
+    target_Q_value = self.session.run(self.target_Q, feed_dict = {self.input_X : next_state})   # 왜 next_state넣는지?
     
 그리고 앞서 만든 손실 함수에 보상값을 입력한다. 단, 게임이 종료된 상태라면 보상값을 바로 넣고 게임이 진행중이라면 보상값에 target_Q_value의 최대값을 추가하여 넣는다. 현재 상황에서의 최대 가치를 목표로 삼기 위함이다.
  
@@ -390,7 +392,7 @@ OpenAI는 인공지능의 발전을 위해 다양한 실험을 할 수 있는 Gy
         sample_memory = random.sample(self.memory, self.BATCH_SIZE)
         
         state = [memory[0] for memory in sample_memory]
-        next_state= [momory[1] for memory in sample_memory]
+        next_state= [memory[1] for memory in sample_memory]
         action = [memory[2] for memory in sample_memory]
         reward = [memory[3] for memory in sample_memory]
         terminal = [memory[4] for memory in sample_memory]
